@@ -51,10 +51,10 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    // marginLeft: 10,
     paddingLeft: 10,
     backgroundColor: 'white',
     borderRadius: 5,
+    elevation: 5,
   },
   date: {
     flexDirection: 'row',

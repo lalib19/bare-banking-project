@@ -1,11 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {StyleSheet, Text, View} from 'react-native';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import {renderItem, transactions} from './Home';
+
+const data = require('../data.json');
+const user = data[0];
 
 const Account = () => {
   return (
     <View>
-      <Text>Account</Text>
+      <FlatList data={transactions} renderItem={renderItem} />
     </View>
   );
 };

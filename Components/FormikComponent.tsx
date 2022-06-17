@@ -14,7 +14,7 @@ interface Page {
 const FormikComponent: React.FC<Page> = ({page}) => {
   const [grossDate, setGrossDate] = useState('');
 
-  const onSubmit = values => {
+  const onSubmit = (values: any) => {
     console.log(values);
     // console.log(page)
     // console.log(grossDate);
