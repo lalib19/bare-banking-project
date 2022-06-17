@@ -18,7 +18,7 @@ export const transactions = user.incomes
     (a: {date: string | number | Date}, b: {date: string | number | Date}) =>
       new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
-export const renderItem = ({item}: any) => {
+const renderItem = ({item}: any) => {
   const toto = item.hasOwnProperty('_id_income') ? '' : '-';
   return (
     <View style={styles.list}>
@@ -53,7 +53,6 @@ const Home: React.FC<NavProps> = ({navigation}) => {
     );
   };
 
-  // console.log(parseFloat(transactions.sort()[0].date))
   return (
     <View style={styles.container}>
       <View style={styles.subcontainer}>
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'lightblue',
+    backgroundColor: '#f7dede',
   },
   subcontainer: {
     // flex: 1,
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
     height: '60%',
   },
   balance: {
-    backgroundColor: 'lightyellow',
+    backgroundColor: 'white',
     height: '70%',
     width: '90%',
     elevation: 10,
