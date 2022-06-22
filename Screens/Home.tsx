@@ -30,29 +30,28 @@ const renderItem = ({item}: any) => {
   );
 };
 
+let income = user.incomes.reduce(
+  (pV: number, cV: {amount: string}) =>
+    pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
+  0,
+);
+let expense = user.expenses.reduce(
+  (pV: number, cV: {amount: string}) =>
+    pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
+  0,
+);
+
+export let balance = income - expense;
+const renderBalance = () => {
+  return (
+    <View style={styles.title}>
+      <Text style={{fontSize: 35, textAlign: 'center'}}>
+        Balance: {balance.toFixed(2)}€
+      </Text>
+    </View>
+  );
+};
 const Home: React.FC<NavProps> = ({navigation}) => {
-  const renderBalance = () => {
-    let income = user.incomes.reduce(
-      (pV: number, cV: {amount: string}) =>
-        pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
-      0,
-    );
-    let expense = user.expenses.reduce(
-      (pV: number, cV: {amount: string}) =>
-        pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
-      0,
-    );
-
-    let balance = income - expense;
-    return (
-      <View style={styles.title}>
-        <Text style={{fontSize: 35, textAlign: 'center'}}>
-          Balance: {balance.toFixed(2)}€
-        </Text>
-      </View>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.subcontainer}>
