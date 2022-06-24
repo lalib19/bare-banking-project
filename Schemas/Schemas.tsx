@@ -1,20 +1,46 @@
-import {View, Text} from 'react-native';
 import React from 'react';
 import Realm from 'realm';
 
-export const TaskSchema = {
-  name: 'Task',
+export const ExpenseSchema = {
+  name: 'Expense',
   properties: {
-    _id: 'int',
-    name: 'string',
-    status: 'string?',
+    beneficiary: 'string',
+    amount: 'string',
+    date: 'string',
+    category: 'string',
+    comments: 'string',
+    _id_expense: 'int',
   },
-  primaryKey: '_id',
+  primaryKey: '_id_expense',
 };
 
-const realm = async () => {
-  await Realm.open({
-    path: 'myrealm',
-    schema: [TaskSchema],
-  });
+export const IncomeSchema = {
+  name: 'Income',
+  properties: {
+    beneficiary: 'string',
+    amount: 'string',
+    date: 'string',
+    category: 'string',
+    comments: 'string',
+    _id_income: 'int',
+  },
+  primaryKey: '_id_income',
 };
+
+export type RegisterType = {
+  beneficiary: string;
+  amount: string;
+  date: string;
+  category: string;
+  comments: string;
+  _id_income?: number;
+  _id_expense?: number;
+};
+
+
+export const realm = Realm.open({
+  path: 'myrealm',
+  schema: [ExpenseSchema, IncomeSchema],
+  deleteRealmIfMigrationNeeded: true,
+});
+

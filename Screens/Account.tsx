@@ -1,31 +1,49 @@
 import {
-  Button,
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import { balance, transactions} from './Home';
+import React, {useEffect, useState} from 'react';
+import { balance} from './Home';
+import { realm, RegisterType } from '../Schemas/Schemas';
 
-const data = require('../data.json');
-const user = data[0];
+const json = require('../data.json');
+const user = json[0];
+
+const transactions = () =>
+  realm
+    .then(realm => {
+      const allExpenses = realm.objects<RegisterType>('Expense');
+      const allIncomes = realm.objects<RegisterType>('Income');
+      return user.incomes
+        .concat(...user.expenses, ...allExpenses, ...allIncomes)
+        .sort(
+          (
+            a: {date: string | number | Date},
+            b: {date: string | number | Date},
+          ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
+    })
+    .catch(error => {
+      console.log(`This is the catch :${error}`);
+    });
 
 const renderList = ({item}: any) => {
-  const toto = item.hasOwnProperty('_id_income') ? '' : '-';
+  const operator = item.hasOwnProperty('_id_income') ? '' : '-';
   return (
     <View style={styles.flatlist}>
       <View style={styles.transaction}>
         <View style={styles.transactionHeader}>
-          <Text style={{fontSize: 20}}>{item.date.split('T')[0]}</Text>
+          <Text style={{fontSize: 20}}>{new Date(item.date).toLocaleDateString()}</Text>
           <Text
             style={[
               item.hasOwnProperty('_id_income')
                 ? styles.income
                 : styles.expense,
             ]}>
-            {toto + item.amount}
+            {operator + item.amount}
           </Text>
         </View>
         <Text>{item.category}</Text>
@@ -40,10 +58,16 @@ const renderList = ({item}: any) => {
 
 const Account = () => {
   const [filter, setFilter] = useState('All');
-  
+  const [allTransactions, setAllTransactions] = useState(undefined);
+  useEffect(() => {
+    transactions().then(allT => {
+      setAllTransactions(allT);
+    });
+  }, []);
+
   let filteredTransactions  
   if(filter === "All") {
-    filteredTransactions = transactions
+    filteredTransactions = allTransactions
   } else if (filter === "Incomes") {
     filteredTransactions = user.incomes
   } else {

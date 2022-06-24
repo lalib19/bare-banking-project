@@ -6,18 +6,87 @@ import {string, StringSchema} from 'yup';
 import {Picker} from '@react-native-picker/picker';
 import * as yup from 'yup';
 import DatePicker from '../Components/DatePicker';
+import {
+  realm,
+  ExpenseSchema,
+  IncomeSchema,
+  RegisterType,
+} from '../Schemas/Schemas';
 
 interface Page {
   page: string;
+  navigation?: any;
 }
 
-const FormikComponent: React.FC<Page> = ({page}) => {
+const FormikComponent: React.FC<Page> = ({navigation, page}) => {
   const [grossDate, setGrossDate] = useState('');
 
   const onSubmit = (values: any) => {
-    console.log(values);
-    // console.log(page)
-    // console.log(grossDate);
+    // console.log(values);
+
+    if (page === 'Gross') {
+      realm
+        .then(realm => {
+          realm.write(() => {
+            realm.create<RegisterType>('Income', {
+              beneficiary: values.beneficiary,
+              amount: values.amount,
+              date: values.date,
+              category: values.category,
+              comments: values.comments,
+              _id_income: Date.now(),
+            });
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+      // realm
+      //   .then(realm => {
+      //     const allExpenses = realm.objects('Expense');
+      //     const allIncomes = realm.objects('Income');
+      //     console.log(
+      //       `These are the expenses : ${JSON.stringify(allExpenses)}`,
+      //     );
+      //     console.log(`These are the incomes : ${JSON.stringify(allIncomes)}`);
+      //   })
+      //   .catch(error => {
+      //     console.log(`This is the catch :${error}`);
+      //   });
+    } else {
+      realm
+        .then(realm => {
+          realm.write(() => {
+            realm.create<RegisterType>('Expense', {
+              beneficiary: values.beneficiary,
+              amount: values.amount,
+              date: values.date,
+              category: values.category,
+              comments: values.comments,
+              _id_expense: Date.now(),
+            });
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+      // realm
+      //   .then(realm => {
+      //     const allExpenses = realm.objects('Expense');
+      //     const allIncomes = realm.objects('Income');
+      //     console.log(
+      //       `These are the expenses : ${JSON.stringify(allExpenses)}`,
+      //     );
+      //     console.log(`These are the incomes : ${JSON.stringify(allIncomes)}`);
+      //   })
+      //   .catch(error => {
+      //     console.log(`This is the catch :${error}`);
+      //   });
+    }
+
+    // navigation.navigate('Home');
   };
 
   const loginValidationSchema = yup.object({
@@ -70,6 +139,7 @@ const FormikComponent: React.FC<Page> = ({page}) => {
               <Text style={styles.label}>Amount</Text>
               <TextInput
                 style={styles.input}
+                keyboardType="numeric"
                 onChangeText={handleChange('amount')}
                 onBlur={handleBlur('amount')}
                 value={values.amount}
@@ -202,7 +272,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    width:"80%",
+    width: '80%',
   },
   error: {
     color: 'black',

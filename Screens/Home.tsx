@@ -1,30 +1,47 @@
 import {
-  Button,
+  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {NavProps} from '../Components/Navigator';
+import {realm, RegisterType} from '../Schemas/Schemas';
 
-const data = require('../data.json');
-const user = data[0];
+const json = require('../data.json');
+const user = json[0];
 
-export const transactions = user.incomes
-  .concat(user.expenses)
-  .sort(
-    (a: {date: string | number | Date}, b: {date: string | number | Date}) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+const transactions = () =>
+  realm
+    .then(realm => {
+      const allExpenses = realm.objects<RegisterType>('Expense');
+      const allIncomes = realm.objects<RegisterType>('Income');
+      // console.log(`These are the expenses : ${allExpenses}`);
+      // console.log(`These are the incomes : ${JSON.stringify(allIncomes)}`);
+      // console.log(allExpenses);
+      // console.log(allIncomes);
+      return user.incomes
+        .concat(...user.expenses, ...allExpenses, ...allIncomes)
+        .sort(
+          (
+            a: {date: string | number | Date},
+            b: {date: string | number | Date},
+          ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
+    })
+    .catch(error => {
+      console.log(`This is the catch :${error}`);
+    });
+
 const renderItem = ({item}: any) => {
   const toto = item.hasOwnProperty('_id_income') ? '' : '-';
   return (
     <View style={styles.list}>
-      {/*.replace(/-/g, ' ')  removes dash in the date */}
+      {/* .replace(/-/g, ' ')  removes dash in the date */}
       <Text>{item.date.split('T')[0]}</Text>
-      <Text>{item.comments.substring(0, 15)}... </Text>
+      {item.comments && <Text>{item.comments.substring(0, 15)}... </Text>}
       <Text>{toto + item.amount}</Text>
     </View>
   );
@@ -52,18 +69,29 @@ const renderBalance = () => {
   );
 };
 const Home: React.FC<NavProps> = ({navigation}) => {
+  const [allTransactions, setAllTransactions] = useState(undefined);
+  useEffect(() => {
+    transactions().then(allT => {
+      setAllTransactions(allT);
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.subcontainer}>
-        <View style={styles.balance}>
-          {renderBalance()}
-          <FlatList
-            style={{width: '90%'}}
-            data={transactions}
-            renderItem={renderItem}
-            initialNumToRender={3}
-          />
-        </View>
+        {allTransactions != undefined ? (
+          <View style={styles.balance}>
+            {renderBalance()}
+            <FlatList
+              style={{width: '90%'}}
+              data={allTransactions}
+              renderItem={renderItem}
+              initialNumToRender={3}
+            />
+          </View>
+        ) : (
+          <ActivityIndicator />
+        )}
 
         <View style={styles.buttons}>
           <TouchableOpacity
