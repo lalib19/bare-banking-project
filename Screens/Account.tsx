@@ -1,77 +1,81 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import { balance} from './Home';
-import { realm, RegisterType } from '../Schemas/Schemas';
+import {balance} from './Home';
+import {realm, RegisterType} from '../Schemas/Schemas';
+import {NavProps} from '../Components/Navigator';
 
 const json = require('../data.json');
 const user = json[0];
 
-const transactions = () =>
-  realm
-    .then(realm => {
-      const allExpenses = realm.objects<RegisterType>('Expense');
-      const allIncomes = realm.objects<RegisterType>('Income');
-      return user.incomes
-        .concat(...user.expenses, ...allExpenses, ...allIncomes)
-        .sort(
-          (
-            a: {date: string | number | Date},
-            b: {date: string | number | Date},
-          ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-        );
-    })
-    .catch(error => {
-      console.log(`This is the catch :${error}`);
-    });
-
 const renderList = ({item}: any) => {
-  const operator = item.hasOwnProperty('_id_income') ? '' : '-';
+  const operator = '_id_income' in item ? '' : '-';
+  const currency = item.amount.includes('€') ? '' : '€';
+
   return (
     <View style={styles.flatlist}>
       <View style={styles.transaction}>
         <View style={styles.transactionHeader}>
-          <Text style={{fontSize: 20}}>{new Date(item.date).toLocaleDateString()}</Text>
+          <Text style={{fontSize: 20}}>
+            {new Date(item.date).toLocaleDateString()}
+          </Text>
           <Text
             style={[
-              item.hasOwnProperty('_id_income')
-                ? styles.income
-                : styles.expense,
+              '_id_income' in item ? styles.income : styles.expense,
             ]}>
-            {operator + item.amount}
+            {operator + currency + item.amount}
           </Text>
         </View>
         <Text>{item.category}</Text>
         <View style={styles.comments}>
-          <Text style={{fontSize: 17}}>{item.comments}</Text>
+          <Text style={{fontSize: 17}}>
+            {item.comments}
+            {item._id_expense}
+            {item._id_income}
+          </Text>
         </View>
       </View>
     </View>
   );
 };
 
-
-const Account = () => {
+const Account: React.FC<NavProps> = ({navigation}) => {
   const [filter, setFilter] = useState('All');
   const [allTransactions, setAllTransactions] = useState(undefined);
-  useEffect(() => {
-    transactions().then(allT => {
-      setAllTransactions(allT);
-    });
-  }, []);
 
-  let filteredTransactions  
-  if(filter === "All") {
-    filteredTransactions = allTransactions
-  } else if (filter === "Incomes") {
-    filteredTransactions = user.incomes
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      const transactions = () =>
+        realm
+          .then(realm => {
+            const allExpenses = realm.objects<RegisterType>('Expense');
+            const allIncomes = realm.objects<RegisterType>('Income');
+            return user.incomes
+              .concat(...user.expenses, ...allExpenses, ...allIncomes)
+              .sort(
+                (
+                  a: {date: string | number | Date},
+                  b: {date: string | number | Date},
+                ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+              );
+          })
+          .catch(error => {
+            console.log(`This is the catch :${error}`);
+          });
+
+      transactions().then(allT => {
+        setAllTransactions(allT);
+      });
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  let filteredTransactions;
+  if (filter === 'All') {
+    filteredTransactions = allTransactions;
+  } else if (filter === 'Incomes') {
+    filteredTransactions = user.incomes;
   } else {
-    filteredTransactions = user.expenses
+    filteredTransactions = user.expenses;
   }
 
   return (

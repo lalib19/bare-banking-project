@@ -3,18 +3,20 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+// import {createNativeStackNavigator, NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Navigator from './Components/Navigator';
 import Home from './Screens/Home';
 import GrossRegister from './Screens/GrossRegister';
-import TestForm from './Components/TestForm';
 import SpendingRegister from './Screens/SpendingRegister';
+import Account from './Screens/Account';
 
 export type RouteParams = {
   Home: undefined;
   Navigator: undefined;
   GrossRegister: undefined;
   SpendingRegister: undefined;
-  TestForm: undefined;
+  Account: undefined;
+  Statistics: undefined;
 };
 
 
@@ -45,8 +47,8 @@ const App = () => {
           // options={{headerShown: false}}
         />
         <Stack.Screen
-          name="TestForm"
-          component={TestForm}
+          name="Account"
+          component={Account}
           // options={{headerShown: false}}
         />
       </Stack.Navigator>

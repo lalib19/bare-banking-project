@@ -8,50 +8,46 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NavProps} from '../Components/Navigator';
-import {realm, RegisterType} from '../Schemas/Schemas';
+import {
+  ExpenseSchema,
+  IncomeSchema,
+  realm,
+  RegisterType,
+} from '../Schemas/Schemas';
 
 const json = require('../data.json');
 const user = json[0];
 
-const transactions = () =>
-  realm
-    .then(realm => {
-      const allExpenses = realm.objects<RegisterType>('Expense');
-      const allIncomes = realm.objects<RegisterType>('Income');
-      // console.log(`These are the expenses : ${allExpenses}`);
-      // console.log(`These are the incomes : ${JSON.stringify(allIncomes)}`);
-      // console.log(allExpenses);
-      // console.log(allIncomes);
-      return user.incomes
-        .concat(...user.expenses, ...allExpenses, ...allIncomes)
-        .sort(
-          (
-            a: {date: string | number | Date},
-            b: {date: string | number | Date},
-          ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-        );
-    })
-    .catch(error => {
-      console.log(`This is the catch :${error}`);
-    });
-
 const renderItem = ({item}: any) => {
-  const toto = item.hasOwnProperty('_id_income') ? '' : '-';
+  const operator = '_id_income' in item ? '' : '-';
+  const currency = item.amount.includes('€') ? '' : '€';
   return (
     <View style={styles.list}>
       {/* .replace(/-/g, ' ')  removes dash in the date */}
-      <Text>{item.date.split('T')[0]}</Text>
+      <Text>{new Date(item.date).toLocaleDateString()}</Text>
       {item.comments && <Text>{item.comments.substring(0, 15)}... </Text>}
-      <Text>{toto + item.amount}</Text>
+      <Text>{operator + currency + item.amount}</Text>
     </View>
   );
 };
+
+let newIncomes;
+realm.then(realm => (newIncomes = realm.objects<RegisterType>('Income')));
+let newExpenses;
+realm.then(realm => (newExpenses = realm.objects<RegisterType>('Expense')));
 
 let income = user.incomes.reduce(
   (pV: number, cV: {amount: string}) =>
     pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
   0,
 );
+// + newIncomes.reduce(
+//   (pV: number, cV: {amount: string}) =>
+//     pV + parseFloat(cV.amount),
+//   0,
+// );
+
+// .concat(...newIncomes);
 let expense = user.expenses.reduce(
   (pV: number, cV: {amount: string}) =>
     pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
@@ -70,11 +66,42 @@ const renderBalance = () => {
 };
 const Home: React.FC<NavProps> = ({navigation}) => {
   const [allTransactions, setAllTransactions] = useState(undefined);
+  const [allExpenses, setAllExpenses] = useState(undefined);
+  const [allIncomes, setAllIncomes] = useState(undefined);
+
   useEffect(() => {
-    transactions().then(allT => {
-      setAllTransactions(allT);
+    const unsubscribe = navigation.addListener('focus', () => {
+      const transactions = () =>
+        realm
+          .then(realm => {
+            const allExpenses = realm.objects<RegisterType>('Expense');
+            const allIncomes = realm.objects<RegisterType>('Income');
+            return [
+              user.incomes
+                .concat(...user.expenses, ...allExpenses, ...allIncomes)
+                .sort(
+                  (
+                    a: {date: string | number | Date},
+                    b: {date: string | number | Date},
+                  ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+                ),
+              allExpenses,
+              allIncomes,
+            ];
+          })
+          .catch(error => {
+            console.log(`This is the catch :${error}`);
+          });
+
+      transactions().then(allT => {
+        // console.log(newExpenses[1].amount);
+        setAllTransactions(allT[0]);
+        setAllExpenses(allT[1]);
+        setAllIncomes(allT[2]);
+      });
     });
-  }, []);
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={styles.container}>

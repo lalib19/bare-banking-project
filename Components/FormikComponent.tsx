@@ -1,29 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useState} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StyleSheet, Text, View, Button, TextInput} from 'react-native';
 import {Formik} from 'formik';
-import {string, StringSchema} from 'yup';
+import {string} from 'yup';
 import {Picker} from '@react-native-picker/picker';
 import * as yup from 'yup';
 import DatePicker from '../Components/DatePicker';
-import {
-  realm,
-  ExpenseSchema,
-  IncomeSchema,
-  RegisterType,
-} from '../Schemas/Schemas';
+import {realm, RegisterType} from '../Schemas/Schemas';
+import {RouteParams} from '../App';
 
 interface Page {
   page: string;
   navigation?: any;
 }
 
-const FormikComponent: React.FC<Page> = ({navigation, page}) => {
+const FormikComponent: React.FC<Page> = ({page}) => {
+  const navigation = useNavigation<NativeStackNavigationProp<RouteParams>>();
   const [grossDate, setGrossDate] = useState('');
 
   const onSubmit = (values: any) => {
-    // console.log(values);
-
+    // add tabnav to navigation
+    //  navigation.navigate('Root', { screen: 'Profile' });
+    navigation.navigate('Home');
     if (page === 'Gross') {
       realm
         .then(realm => {
@@ -34,26 +34,13 @@ const FormikComponent: React.FC<Page> = ({navigation, page}) => {
               date: values.date,
               category: values.category,
               comments: values.comments,
-              _id_income: Date.now(),
+              _id_income: Date.now().toString(),
             });
           });
         })
         .catch(error => {
           console.log(error);
         });
-
-      // realm
-      //   .then(realm => {
-      //     const allExpenses = realm.objects('Expense');
-      //     const allIncomes = realm.objects('Income');
-      //     console.log(
-      //       `These are the expenses : ${JSON.stringify(allExpenses)}`,
-      //     );
-      //     console.log(`These are the incomes : ${JSON.stringify(allIncomes)}`);
-      //   })
-      //   .catch(error => {
-      //     console.log(`This is the catch :${error}`);
-      //   });
     } else {
       realm
         .then(realm => {
@@ -64,29 +51,14 @@ const FormikComponent: React.FC<Page> = ({navigation, page}) => {
               date: values.date,
               category: values.category,
               comments: values.comments,
-              _id_expense: Date.now(),
+              _id_expense: Date.now().toString(),
             });
           });
         })
         .catch(error => {
           console.log(error);
         });
-
-      // realm
-      //   .then(realm => {
-      //     const allExpenses = realm.objects('Expense');
-      //     const allIncomes = realm.objects('Income');
-      //     console.log(
-      //       `These are the expenses : ${JSON.stringify(allExpenses)}`,
-      //     );
-      //     console.log(`These are the incomes : ${JSON.stringify(allIncomes)}`);
-      //   })
-      //   .catch(error => {
-      //     console.log(`This is the catch :${error}`);
-      //   });
     }
-
-    // navigation.navigate('Home');
   };
 
   const loginValidationSchema = yup.object({

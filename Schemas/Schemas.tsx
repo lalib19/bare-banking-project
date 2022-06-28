@@ -9,7 +9,7 @@ export const ExpenseSchema = {
     date: 'string',
     category: 'string',
     comments: 'string',
-    _id_expense: 'int',
+    _id_expense: 'string',
   },
   primaryKey: '_id_expense',
 };
@@ -22,7 +22,7 @@ export const IncomeSchema = {
     date: 'string',
     category: 'string',
     comments: 'string',
-    _id_income: 'int',
+    _id_income: 'string',
   },
   primaryKey: '_id_income',
 };
@@ -33,8 +33,8 @@ export type RegisterType = {
   date: string;
   category: string;
   comments: string;
-  _id_income?: number;
-  _id_expense?: number;
+  _id_income?: string;
+  _id_expense?: string;
 };
 
 

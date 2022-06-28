@@ -1,0 +1,136 @@
+[
+  {
+    "_id_expense": 1656062558961,
+    "amount": "123.85",
+    "beneficiary": "5yf6",
+    "category": "Housing",
+    "comments": "From expense ",
+    "date": "06/23/22"
+  },
+  {
+    "_id_income": 1655989168830,
+    "amount": "Jk",
+    "beneficiary": "Gross",
+    "category": "Rent revenue",
+    "comments": "G",
+    "date": "06/18/22"
+  },
+  {
+    "_id_expense": 1656062514468,
+    "amount": "123.96",
+    "beneficiary": "Iirit",
+    "category": "Healthcare",
+    "comments": "From expense ",
+    "date": "06/17/22"
+  },
+  {
+    "_id_income": 1656062368196,
+    "amount": "345.96",
+    "beneficiary": "Ikrodo",
+    "category": "Welfare",
+    "comments": "Beautiful comment ",
+    "date": "06/14/22"
+  },
+  {
+    "_id_income": 1656062796161,
+    "amount": "565",
+    "beneficiary": "4ufy",
+    "category": "Rent revenue",
+    "comments": "Income ",
+    "date": "06/14/22"
+  },
+  {
+    "_id_income": 1656062871239,
+    "amount": "956",
+    "beneficiary": "74u",
+    "category": "Exceptional income",
+    "comments": "Dahqf",
+    "date": "06/13/22"
+  },
+  {
+    "_id_expense": 1656062745747,
+    "amount": "3321",
+    "beneficiary": "Gjfr",
+    "category": "Transportation",
+    "comments": "Expense ",
+    "date": "06/10/22"
+  },
+  {
+    "_id_expense": 1655988835194,
+    "amount": "Fh",
+    "beneficiary": "Spending",
+    "category": "Housing",
+    "comments": "Hr",
+    "date": "06/02/22"
+  },
+  {
+    "_id_income": "ddb29c0f-5cee-4d06-9098-1ba45af110a0",
+    "amount": "€2,851.88",
+    "category": "Salaire et assimilé",
+    "comments": "magna nostrud tempor ullamco consequat et veniam et veniam nostrud",
+    "date": "2021-06-19T22:55:21.783Z"
+  },
+  {
+    "_id_income": "44c7286f-8b52-4973-ab8d-cf69f234c8a6",
+    "amount": "€3,912.97",
+    "category": "Prestations sociales",
+    "comments": "pariatur ex irure officia dolore esse ex voluptate do nisi",
+    "date": "2021-06-09T03:10:42.139Z"
+  },
+  {
+    "_id_income": "cfeb2424-d28b-48d1-8630-ed4397878823",
+    "amount": "€3,449.57",
+    "category": "Revenu financier",
+    "comments": "consequat amet Lorem duis ullamco deserunt ex culpa reprehenderit in",
+    "date": "2021-06-03T09:34:21.683Z"
+  },
+  {
+    "_id_expense": "d966f883-d234-40fc-ac7d-9b7eab094ac7",
+    "amount": "€1,705.05",
+    "category": "Transport",
+    "comments": "dolor consectetur labore duis labore cillum esse sunt ipsum magna",
+    "date": "2021-06-02T12:43:37.005Z"
+  },
+  {
+    "_id_income": "1528bd57-cff6-4d93-925f-51d9488d4064",
+    "amount": "€1,954.61",
+    "category": "Prestations sociales",
+    "comments": "occaecat aliqua enim id consectetur do non adipisicing voluptate occaecat",
+    "date": "2021-05-21T19:27:49.861Z"
+  },
+  {
+    "_id_expense": "bd34d98f-94b0-4b4d-be8f-36c0836af3b2",
+    "amount": "€3,321.23",
+    "category": "Autre",
+    "comments": "officia do in mollit nostrud adipisicing velit est sit enim",
+    "date": "2021-05-19T16:20:46.678Z"
+  },
+  {
+    "_id_expense": "ea65c384-7f28-4926-a286-de2b7e081daf",
+    "amount": "€2,741.83",
+    "category": "Autre",
+    "comments": "dolor dolore do culpa et ullamco velit pariatur reprehenderit sit",
+    "date": "2021-05-18T19:54:13.569Z"
+  },
+  {
+    "_id_income": "3b1935df-7d48-4726-96f4-d65fbd6c6322",
+    "amount": "€1,986.36",
+    "category": "Revenu foncier",
+    "comments": "eiusmod commodo dolore qui eiusmod quis tempor mollit nisi aliqua",
+    "date": "2021-05-11T15:29:53.541Z"
+  },
+  {
+    "_id_expense": "daf7eaec-87f2-45be-a9cd-3710f4402d27",
+    "amount": "€1,070.58",
+    "category": "Transport",
+    "comments": "proident qui anim amet dolore ea elit cupidatat irure qui",
+    "date": "2021-04-29T23:42:36.654Z"
+  },
+  {
+    "_id_expense": "3b444fa4-6390-4cfd-83dc-7c661c697d0f",
+    "amount": "€3,249.32",
+    "category": "Logement",
+    "comments": "eiusmod commodo labore culpa dolor amet commodo consequat culpa do",
+    "date": "2021-04-09T16:20:15.869Z"
+  }
+]
