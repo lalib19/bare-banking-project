@@ -31,43 +31,29 @@ const renderItem = ({item}: any) => {
   );
 };
 
-let newIncomes;
-realm.then(realm => (newIncomes = realm.objects<RegisterType>('Income')));
-let newExpenses;
-realm.then(realm => (newExpenses = realm.objects<RegisterType>('Expense')));
+// let newIncomes;
+// realm.then(realm => (newIncomes = realm.objects<RegisterType>('Income')));
+// let newExpenses;
+// realm.then(realm => (newExpenses = realm.objects<RegisterType>('Expense')));
 
-let income = user.incomes.reduce(
-  (pV: number, cV: {amount: string}) =>
-    pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
-  0,
-);
-// + newIncomes.reduce(
-//   (pV: number, cV: {amount: string}) =>
-//     pV + parseFloat(cV.amount),
-//   0,
-// );
+interface ArrayType {
+  beneficiary: string;
+  amount: string;
+  date: string;
+  category: string;
+  comments: string;
+  _id_income?: string;
+  _id_expense?: string;
+}
 
-// .concat(...newIncomes);
-let expense = user.expenses.reduce(
-  (pV: number, cV: {amount: string}) =>
-    pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
-  0,
-);
+interface ArrayTypes extends Array<ArrayType> {}
 
-export let balance = income - expense;
-const renderBalance = () => {
-  return (
-    <View style={styles.title}>
-      <Text style={{fontSize: 35, textAlign: 'center'}}>
-        Balance: {balance.toFixed(2)}€
-      </Text>
-    </View>
-  );
-};
 const Home: React.FC<NavProps> = ({navigation}) => {
   const [allTransactions, setAllTransactions] = useState(undefined);
-  const [allExpenses, setAllExpenses] = useState(undefined);
-  const [allIncomes, setAllIncomes] = useState(undefined);
+  const [allExpenses, setAllExpenses] = useState<any[]>([]);
+  const [allIncomes, setAllIncomes] = useState<any[]>([]);
+  // const [allExpenses, setAllExpenses] = useState<ArrayTypes>({} as ArrayTypes);
+  // const [allIncomes, setAllIncomes] = useState<ArrayTypes>({} as ArrayTypes);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -76,8 +62,8 @@ const Home: React.FC<NavProps> = ({navigation}) => {
           .then(realm => {
             const allExpenses = realm.objects<RegisterType>('Expense');
             const allIncomes = realm.objects<RegisterType>('Income');
-            return [
-              user.incomes
+            return {
+              allT: user.incomes
                 .concat(...user.expenses, ...allExpenses, ...allIncomes)
                 .sort(
                   (
@@ -85,23 +71,54 @@ const Home: React.FC<NavProps> = ({navigation}) => {
                     b: {date: string | number | Date},
                   ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
                 ),
-              allExpenses,
-              allIncomes,
-            ];
+              allE: allExpenses,
+              allI: allIncomes,
+            };
           })
           .catch(error => {
             console.log(`This is the catch :${error}`);
           });
 
-      transactions().then(allT => {
-        // console.log(newExpenses[1].amount);
-        setAllTransactions(allT[0]);
-        setAllExpenses(allT[1]);
-        setAllIncomes(allT[2]);
+      transactions().then(data => {
+        setAllTransactions(data.allT);
+        setAllExpenses(data.allE);
+        setAllIncomes(data.allI);
       });
     });
     return unsubscribe;
   }, [navigation]);
+
+  let income = user.incomes.reduce(
+    (pV: number, cV: {amount: string}) =>
+      pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
+    0,
+  );
+  let newIncome = allIncomes.reduce(
+    (pV: number, cV: {amount: string}) => pV + parseFloat(cV.amount),
+    0,
+  );
+
+  let expense = user.expenses.reduce(
+    (pV: number, cV: {amount: string}) =>
+      pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
+    0,
+  );
+  let newExpense = allExpenses.reduce(
+    (pV: number, cV: {amount: string}) => pV + parseFloat(cV.amount),
+    0,
+  );
+
+  let balance = income + newIncome - newExpense - expense;
+
+  const renderBalance = () => {
+    return (
+      <View style={styles.title}>
+        <Text style={{fontSize: 35, textAlign: 'center'}}>
+          Balance: {balance.toFixed(2)}€
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>

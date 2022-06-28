@@ -1,6 +1,6 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {balance} from './Home';
+// import {balance} from './Home';
 import {realm, RegisterType} from '../Schemas/Schemas';
 import {NavProps} from '../Components/Navigator';
 
@@ -18,10 +18,7 @@ const renderList = ({item}: any) => {
           <Text style={{fontSize: 20}}>
             {new Date(item.date).toLocaleDateString()}
           </Text>
-          <Text
-            style={[
-              '_id_income' in item ? styles.income : styles.expense,
-            ]}>
+          <Text style={['_id_income' in item ? styles.income : styles.expense]}>
             {operator + currency + item.amount}
           </Text>
         </View>
@@ -37,10 +34,14 @@ const renderList = ({item}: any) => {
     </View>
   );
 };
+type Callback = (callback: any) => void
+
 
 const Account: React.FC<NavProps> = ({navigation}) => {
   const [filter, setFilter] = useState('All');
-  const [allTransactions, setAllTransactions] = useState(undefined);
+  const [allTransactions, setAllTransactions] = useState<any[] | undefined>(undefined);
+  const [allExpenses, setAllExpenses] = useState<any[]>([]);
+  const [allIncomes, setAllIncomes] = useState<any[]>([]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -49,39 +50,90 @@ const Account: React.FC<NavProps> = ({navigation}) => {
           .then(realm => {
             const allExpenses = realm.objects<RegisterType>('Expense');
             const allIncomes = realm.objects<RegisterType>('Income');
-            return user.incomes
-              .concat(...user.expenses, ...allExpenses, ...allIncomes)
-              .sort(
-                (
-                  a: {date: string | number | Date},
-                  b: {date: string | number | Date},
-                ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-              );
+            return {
+              allT: user.incomes
+                .concat(...user.expenses, ...allExpenses, ...allIncomes)
+                .sort(
+                  (
+                    a: {date: string | number | Date},
+                    b: {date: string | number | Date},
+                  ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+                ),
+              allE: allExpenses,
+              allI: allIncomes,
+            };
           })
           .catch(error => {
             console.log(`This is the catch :${error}`);
           });
-
-      transactions().then(allT => {
-        setAllTransactions(allT);
+      transactions().then(data => {
+        setAllTransactions(data.allT);
+        setAllExpenses(data.allE);
+        setAllIncomes(data.allI);
       });
     });
     return unsubscribe;
   }, [navigation]);
 
+  let income = user.incomes.reduce(
+    (pV: number, cV: {amount: string}) =>
+      pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
+    0,
+  );
+  let newIncome = allIncomes.reduce(
+    (pV: number, cV: {amount: string}) => pV + parseFloat(cV.amount),
+    0,
+  );
+
+  let expense = user.expenses.reduce(
+    (pV: number, cV: {amount: string}) =>
+      pV + parseFloat(cV.amount.replace(/[^\d.-]/g, '')),
+    0,
+  );
+  let newExpense = allExpenses.reduce(
+    (pV: number, cV: {amount: string}) => pV + parseFloat(cV.amount),
+    0,
+  );
+
+  let balance = income + newIncome - newExpense - expense;
+
+  const renderBalance = () => {
+    return (
+      <View>
+        <Text style={{fontSize: 35, textAlign: 'center'}}>
+          Balance: {balance.toFixed(2)}€
+        </Text>
+      </View>
+    );
+  };
+
   let filteredTransactions;
   if (filter === 'All') {
     filteredTransactions = allTransactions;
   } else if (filter === 'Incomes') {
-    filteredTransactions = user.incomes;
+    filteredTransactions = user.incomes
+      .concat(...allIncomes)
+      .sort(
+        (
+          a: {date: string | number | Date},
+          b: {date: string | number | Date},
+        ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
   } else {
-    filteredTransactions = user.expenses;
+    filteredTransactions = user.expenses
+      .concat(...allExpenses)
+      .sort(
+        (
+          a: {date: string | number | Date},
+          b: {date: string | number | Date},
+        ) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.user}>{user.user}'s account</Text>
-      <Text style={styles.balance}>Balance {balance.toFixed(2)}€</Text>
+      <Text style={styles.balance}>{renderBalance()}</Text>
       <View
         style={{
           flexDirection: 'row',

@@ -12,13 +12,12 @@ import Account from './Screens/Account';
 
 export type RouteParams = {
   Home: undefined;
-  Navigator: undefined;
+  Navigator: undefined | {screen: string};
   GrossRegister: undefined;
   SpendingRegister: undefined;
   Account: undefined;
   Statistics: undefined;
 };
-
 
 const Stack = createNativeStackNavigator<RouteParams>();
 

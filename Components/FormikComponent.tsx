@@ -21,9 +21,7 @@ const FormikComponent: React.FC<Page> = ({page}) => {
   const [grossDate, setGrossDate] = useState('');
 
   const onSubmit = (values: any) => {
-    // add tabnav to navigation
-    //  navigation.navigate('Root', { screen: 'Profile' });
-    navigation.navigate('Home');
+    navigation.navigate('Navigator', {screen: "Home"});
     if (page === 'Gross') {
       realm
         .then(realm => {
